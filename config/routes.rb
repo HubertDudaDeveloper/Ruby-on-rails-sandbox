@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  devise_for :users
+  root 'pages#home'
   get "pages/home"
   resources :patients
   resources :posts
@@ -11,6 +13,17 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+
+  abc = 'test'
+  puts abc.to_str
+
+  authenticated :user do
+    root 'dashboard#index', as: :authenticated_root
+  end
+
+  unauthenticated do
+    root 'pages#home', as: :unauthenticated_root
+  end
 
   # Defines the root path route ("/")
   # root "posts#index"

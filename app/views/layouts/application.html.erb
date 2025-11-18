@@ -7,6 +7,14 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script>
+      (function() {
+        var storedTheme = localStorage.getItem("theme");
+        var shouldUseDark = storedTheme === "dark" || (storedTheme === null && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", shouldUseDark);
+        document.documentElement.dataset.theme = shouldUseDark ? "dark" : "light";
+      })();
+    </script>
 
     <%= yield :head %>
 
@@ -18,7 +26,41 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    test
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors min-h-screen">
+    <nav class="p-4 bg-gray-200 dark:bg-gray-900/60 mb-4 flex items-center justify-between">
+      <div>
+        <a href="<%= root_path %>" class="mr-4 font-medium hover:underline">Home</a>
+        <a href="<%= patients_path %>" class="mr-4 font-medium hover:underline">patients</a>
+      </div>
+      <button id="theme-toggle" type="button" class="px-3 py-1 rounded border border-gray-400 dark:border-gray-500 text-sm">
+        Switch to Dark
+      </button>
+    </nav>
+
+    <main class="px-4 pb-8">
+      <%= yield %>
+    </main>
+
+    <script>
+      (function() {
+        var toggle = document.getElementById("theme-toggle");
+        if (!toggle) return;
+
+        function applyTheme(theme) {
+          var useDark = theme === "dark";
+          document.documentElement.classList.toggle("dark", useDark);
+          document.documentElement.dataset.theme = useDark ? "dark" : "light";
+          localStorage.setItem("theme", useDark ? "dark" : "light");
+          toggle.textContent = useDark ? "Switch to Light" : "Switch to Dark";
+        }
+
+        toggle.addEventListener("click", function() {
+          var currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+          applyTheme(currentTheme === "dark" ? "light" : "dark");
+        });
+
+        applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+      })();
+    </script>
   </body>
 </html>
